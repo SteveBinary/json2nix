@@ -1,10 +1,10 @@
 { pkgs, ... }:
 
 let
-  manifest = (pkgs.lib.importTOML ./Cargo.toml).package;
+  manifest = (pkgs.lib.importTOML ./json2nix-cli/Cargo.toml).package;
 in
 {
-  app = pkgs.rustPlatform.buildRustPackage {
+  cli = pkgs.rustPlatform.buildRustPackage {
     pname = manifest.name;
     version = manifest.version;
 

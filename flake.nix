@@ -26,8 +26,8 @@
           package = import ./default.nix { inherit pkgs; };
         in
         rec {
-          app = package.app;
-          default = app;
+          cli = package.cli;
+          default = cli;
         }
       );
     };
