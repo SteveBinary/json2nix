@@ -3,33 +3,32 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, rust-overlay }:
-    flake-utils.lib.eachDefaultSystem
-      (system:
+  outputs = { self, nixpkgs, rust-overlay }:
+    let
+      overlays = [ (import rust-overlay) ];
+      supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
+      forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
+        pkgs = import nixpkgs { inherit system overlays; };
+      });
+    in
+    {
+      devShells = forEachSupportedSystem ({ pkgs }: {
+        default = import ./shell.nix { inherit pkgs; };
+      });
+      packages = forEachSupportedSystem ({ pkgs }:
         let
-          overlays = [ (import rust-overlay) ];
-          pkgs = import nixpkgs { inherit system overlays; };
-          rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
-          nativeBuildInputs = with pkgs; [
-            rustToolchain
-            #pkg-config
-          ];
+          package = import ./default.nix { inherit pkgs; };
         in
-        with pkgs;
-        {
-          devShells.default = mkShell {
-            inherit nativeBuildInputs;
-          };
+        rec {
+          app = package.app;
+          default = app;
         }
       );
+    };
 }
