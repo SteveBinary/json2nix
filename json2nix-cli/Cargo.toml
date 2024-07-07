@@ -1,7 +1,15 @@
 [package]
 name = "json2nix-cli"
 version = "0.1.0"
+description = "Tool to convert JSON to a Nix expression"
 edition.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "json2nix"
+path = "src/main.rs"
 
 [dependencies]
 json2nix = { workspace = true }
+
+clap = { workspace = true }

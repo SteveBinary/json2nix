@@ -6,20 +6,22 @@ use indent::indent;
 use serde_json::Value;
 
 pub fn json2nix(
-    json: &str,
+    input: &str,
     initial_indentation: usize,
     indentation_increment: usize,
-) -> Result<String, ()> {
-    let parsed: Value = match serde_json::from_str(json) {
+) -> Result<String, String> {
+    let json: Value = match serde_json::from_str(input) {
         Ok(value) => value,
         Err(err) => {
-            eprintln!("ERROR: {}", err);
-            return Err(());
+            return Err(format!(
+                "Could not parse the input as JSON: {}",
+                err.to_string()
+            ));
         }
     };
 
     Ok(indent(
-        &to_nix(&parsed, initial_indentation, indentation_increment),
+        &to_nix(&json, initial_indentation, indentation_increment),
         initial_indentation,
     ))
 }
