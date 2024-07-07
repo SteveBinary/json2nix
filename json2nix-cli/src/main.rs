@@ -27,7 +27,7 @@ fn main() {
         }
     "#;
 
-    println!("{}", json2nix::json2nix(input).unwrap());
+    println!("{}", json2nix::json2nix(input, 0, 2).unwrap());
 
     let input = r#"
         [
@@ -50,5 +50,5 @@ fn main() {
         ]
     "#;
 
-    println!("{}", json2nix::json2nix(input).unwrap());
+    println!("{}", json2nix::json2nix(input, 0, 2).unwrap());
 }
