@@ -7,6 +7,11 @@ fn main() {
             "null_value": null,
             "number": 123,
             "empty_list": [],
+            "list_with_single_object": [
+                {
+                    "a": "b"
+                }
+            ],
             "list": [
                 true,
                 false,

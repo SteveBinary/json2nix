@@ -32,7 +32,6 @@ fn to_nix(value: &Value, indentation: usize, indentation_increment: usize) -> St
         Value::String(string) => format!(r#""{}""#, string),
         Value::Array(array) => match array.len() {
             0 => "[ ]".to_string(),
-            1 => format!("[ {} ]", to_nix(&array[0], 0, indentation_increment)),
             _ => {
                 let mut formatted_elements = Vec::with_capacity(array.len());
                 for element in array {
@@ -84,8 +83,27 @@ fn to_nix(value: &Value, indentation: usize, indentation_increment: usize) -> St
 
 #[cfg(test)]
 mod test {
+    use std::ops::Not;
+
     use super::*;
     use serde_json::{json, value::Number, Map, Value};
+
+    fn trim_indent(input: &str) -> String {
+        let common_indent = input
+            .lines()
+            .filter(|line| line.is_empty().not())
+            .map(|line| line.chars().take_while(|c| *c == ' ').count())
+            .min()
+            .unwrap_or(0);
+
+        input
+            .lines()
+            .map(|line| line.chars().skip(common_indent).collect::<String>())
+            .collect::<Vec<_>>()
+            .join("\n")
+            .trim()
+            .to_string()
+    }
 
     #[test]
     fn null() {
@@ -148,8 +166,8 @@ mod test {
     #[test]
     fn array_single_bool() {
         let input = Value::Array(vec![Value::Bool(true)]);
-        let expected = "[ true ]";
-        assert_eq!(expected, to_nix(&input, 0, 0));
+        let expected = "[\n  true\n]";
+        assert_eq!(expected, to_nix(&input, 0, 2));
     }
 
     #[test]
@@ -174,5 +192,80 @@ mod test {
     }
 
     #[test]
-    fn complex_object() {}
+    fn complex_object() {
+        let input = json!({
+            "a": 123,
+            "hello-world": "!",
+            "1": 1,
+            "obj1": {
+                "key1": true,
+                "null": null,
+                "arr1": [
+                    false,
+                    "abc",
+                    {
+                        "xyz1": {
+                            "xyz2": {
+                                "elemenope": 5.55
+                            }
+                        }
+                    }
+                ]
+            }
+        });
+        let expected = r#"
+          {
+            a = 123;
+            hello-world = "!";
+            "1" = 1;
+            obj1 = {
+              key1 = true;
+              "null" = null;
+              arr1 = [
+                false
+                "abc"
+                {
+                  xyz1 = {
+                    xyz2 = {
+                      elemenope = 5.55;
+                    };
+                  };
+                }
+              ];
+            };
+          }"#;
+        assert_eq!(trim_indent(expected), to_nix(&input, 0, 2));
+    }
+
+    #[test]
+    fn complex_array() {
+        let input = json!([
+            true,
+            false,
+            "hello",
+            123,
+            123.456,
+            [
+                null,
+                {
+                    "a_b_c": "abc"
+                }
+            ]
+        ]);
+        let expected = r#"
+          [
+            true
+            false
+            "hello"
+            123
+            123.456
+            [
+              null
+              {
+                a_b_c = "abc";
+              }
+            ]
+          ]"#;
+        assert_eq!(trim_indent(expected), to_nix(&input, 0, 2));
+    }
 }
