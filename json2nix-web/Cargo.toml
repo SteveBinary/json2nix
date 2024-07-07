@@ -1,0 +1,10 @@
+[package]
+name = "json2nix-web"
+version = "0.1.0"
+description = "Web-App to convert JSON to a Nix expression"
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+json2nix = { workspace = true }
+leptos = { version = "0.6.*", features = ["csr"] }

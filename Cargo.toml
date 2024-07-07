@@ -3,6 +3,7 @@ resolver = "2"
 members = [
   "json2nix",
   "json2nix-cli",
+  "json2nix-web",
 ]
 
 [workspace.package]

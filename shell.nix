@@ -13,5 +13,6 @@ pkgs.mkShell {
     rust-analyzer
     rustfmt
     clippy
+    trunk
   ];
 }
