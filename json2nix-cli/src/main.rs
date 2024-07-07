@@ -6,12 +6,48 @@ fn main() {
             "hello": "world",
             "null_value": null,
             "number": 123,
-            "list": [],
+            "empty_list": [],
+            "list": [
+                true,
+                false,
+                123.456,
+                {
+                    "a": "b"
+                }
+            ],
             "empty_object": {},
             "object": {
-                "key": "value"
+                "key": "value",
+                "abc": null,
+                "null": null,
+                "123": {
+                    "a-b": 4
+                }
             }
         }
+    "#;
+
+    println!("{}", json2nix::json2nix(input).unwrap());
+
+    let input = r#"
+        [
+            true,
+            false,
+            123,
+            123.456,
+            null,
+            "hello",
+            [ ],
+            [ true, false, 123 ],
+            { },
+            {
+                "abc": "def",
+                "sub-object": {
+                    "a": "a",
+                    "b": "b"
+                }
+            }
+        ]
     "#;
 
     println!("{}", json2nix::json2nix(input).unwrap());
