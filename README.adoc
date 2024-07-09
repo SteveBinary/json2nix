@@ -1,0 +1,10 @@
+= json2nix
+
+Convert any valid JSON to https://nix.dev/tutorials/nix-language.html[Nix].
+
+== Acknowledgements
+
+This projects makes use of the following open source projects and is thankful for their work:
+
+* https://bulma.io[Bulma] for CSS styles
+* https://highlightjs.org[highlight.js] for syntax highlighting

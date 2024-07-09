@@ -1,7 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <link data-trunk rel="css" href="/assets/style/bulma-1.0.1.min.css" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Convert JSON to Nix">
+    <title>Json2Nix</title>
+    <link data-trunk rel="css" href="/assets/vendor/bulma/bulma.min.css"/>
+    <link data-trunk rel="css" media="screen and (prefers-color-scheme: light)" href="/assets/vendor/highlightjs/styles/stackoverflow-light.min.css"/>
+    <link data-trunk rel="css" media="screen and (prefers-color-scheme: dark)" href="/assets/vendor/highlightjs/styles/stackoverflow-dark.min.css"/>
+    <script data-trunk src="/assets/vendor/highlightjs/highlight.min.js" defer></script>
+    <script data-trunk src="/assets/vendor/highlightjs/languages/nix.min.js" defer></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        min-height: 100vh;
+      }
+      textarea, pre {
+        -webkit-border-radius: 10px !important;
+        -moz-border-radius: 10px !important;
+        border-radius: 10px !important;
+      }
+    </style>
   </head>
-  <body></body>
+  <body>
+    <script>
+      function highlight_nix_code(code) {
+        return hljs.highlight(code, { language: "nix", ignoreIllegals: true }).value
+      }
+    </script>
+  </body>
 </html>

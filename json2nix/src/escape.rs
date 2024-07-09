@@ -8,8 +8,9 @@ pub fn escape_attribute_set_key(value: &str) -> String {
     }
 }
 
-const KEYWORDS: [&str; 9] = [
-    "true", "false", "null", "let", "in", "import", "inherit", "rec", "with",
+const KEYWORDS: [&str; 13] = [
+    "true", "false", "null", "import", "inherit", "rec", "with", "assert", "if", "then", "else",
+    "let", "in",
 ];
 
 fn needs_escape(value: &str) -> bool {

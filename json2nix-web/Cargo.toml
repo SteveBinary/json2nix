@@ -7,4 +7,5 @@ authors.workspace = true
 
 [dependencies]
 json2nix = { workspace = true }
-leptos = { version = "0.6.*", features = ["csr"] }
+leptos = { workspace = true }
+wasm-bindgen = { workspace = true }
