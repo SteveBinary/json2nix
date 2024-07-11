@@ -7,5 +7,7 @@ authors.workspace = true
 
 [dependencies]
 json2nix = { workspace = true }
+
 leptos = { workspace = true }
+leptos-use = { workspace = true }
 wasm-bindgen = { workspace = true }
