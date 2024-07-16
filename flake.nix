@@ -23,10 +23,11 @@
       });
       packages = forEachSupportedSystem ({ pkgs }:
         let
-          package = import ./default.nix { inherit pkgs; };
+          package = import ./package.nix { inherit pkgs; };
         in
         rec {
           cli = package.cli;
+          web = package.web;
           default = cli;
         }
       );

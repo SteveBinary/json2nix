@@ -1,18 +1,21 @@
 { pkgs, ... }:
 
 let
-  rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+  package = pkgs.callPackage ./package.nix {};
 in
-
 pkgs.mkShell {
-  inputsFrom = [ (pkgs.callPackage ./default.nix { }) ];
-  nativeBuildInputs = [
-    rustToolchain
+  inputsFrom = [
+    package.cli
+    package.web
   ];
+
   buildInputs = with pkgs; [
     rust-analyzer
     rustfmt
     clippy
-    trunk
   ];
+
+  env = {
+    TRUNK_SKIP_VERSION_CHECK = true;
+  };
 }
