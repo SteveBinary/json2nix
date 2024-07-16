@@ -9,8 +9,7 @@ pub fn escape_attribute_set_key(value: &str) -> String {
 }
 
 const KEYWORDS: [&str; 13] = [
-    "true", "false", "null", "import", "inherit", "rec", "with", "assert", "if", "then", "else",
-    "let", "in",
+    "true", "false", "null", "import", "inherit", "rec", "with", "assert", "if", "then", "else", "let", "in",
 ];
 
 fn needs_escape(value: &str) -> bool {
@@ -45,9 +44,7 @@ mod test {
 
     #[test]
     fn simple_escapes() {
-        let values = [
-            "", " ", "   ", ".", "/", "1", "1a", "1a-", "-", "-a", "_", "_a", "a b",
-        ];
+        let values = ["", " ", "   ", ".", "/", "1", "1a", "1a-", "-", "-a", "_", "_a", "a b"];
         for value in values {
             let expected = format!("\"{}\"", value);
             assert_eq!(expected, escape_attribute_set_key(value));

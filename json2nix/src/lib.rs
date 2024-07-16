@@ -5,25 +5,15 @@ use escape::escape_attribute_set_key;
 use indent::indent;
 use serde_json::Value;
 
-pub fn json2nix(
-    input: &str,
-    initial_indentation: usize,
-    indentation_increment: usize,
-) -> Result<String, String> {
+pub fn json2nix(input: &str, initial_indentation: usize, indentation_increment: usize) -> Result<String, String> {
     let json: Value = match serde_json::from_str(input) {
         Ok(value) => value,
         Err(err) => {
-            return Err(format!(
-                "Could not parse the input as JSON: {}",
-                err.to_string()
-            ));
+            return Err(format!("Could not parse the input as JSON: {}", err.to_string()));
         }
     };
 
-    Ok(indent(
-        &to_nix(&json, initial_indentation, indentation_increment),
-        initial_indentation,
-    ))
+    Ok(indent(&to_nix(&json, initial_indentation, indentation_increment), initial_indentation))
 }
 
 fn to_nix(value: &Value, indentation: usize, indentation_increment: usize) -> String {
@@ -37,11 +27,7 @@ fn to_nix(value: &Value, indentation: usize, indentation_increment: usize) -> St
             _ => {
                 let mut formatted_elements = Vec::with_capacity(array.len());
                 for element in array {
-                    formatted_elements.push(to_nix(
-                        element,
-                        indentation + indentation_increment,
-                        indentation_increment,
-                    ));
+                    formatted_elements.push(to_nix(element, indentation + indentation_increment, indentation_increment));
                 }
                 format!(
                     "[\n{}\n{}",
@@ -62,11 +48,7 @@ fn to_nix(value: &Value, indentation: usize, indentation_increment: usize) -> St
                     formatted_elements.push(format!(
                         "{} = {};",
                         escape_attribute_set_key(key),
-                        to_nix(
-                            value,
-                            indentation + indentation_increment,
-                            indentation_increment
-                        )
+                        to_nix(value, indentation + indentation_increment, indentation_increment)
                     ));
                 }
                 format!(
