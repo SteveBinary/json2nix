@@ -8,7 +8,7 @@ let
 in
 {
   cli = pkgs.rustPlatform.buildRustPackage {
-    pname = cliManifest.package.name;
+    pname = (builtins.head cliManifest.bin).name;
     version = cliManifest.package.version;
 
     src = pkgs.lib.cleanSource ./.;
