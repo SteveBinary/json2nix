@@ -1,4 +1,5 @@
 mod app;
+mod copy_button;
 mod number_input;
 
 use leptos::mount_to_body;

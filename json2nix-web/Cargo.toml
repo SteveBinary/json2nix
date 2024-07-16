@@ -1,9 +1,10 @@
 [package]
 name = "json2nix-web"
-version = "0.1.0"
+version = "1.0.0"
 description = "Web-App to convert JSON to a Nix expression"
 edition.workspace = true
 authors.workspace = true
+repository.workspace = true
 
 [dependencies]
 json2nix = { workspace = true }

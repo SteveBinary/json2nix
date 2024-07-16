@@ -1,10 +1,15 @@
 = json2nix
 
-Convert any valid JSON to https://nix.dev/tutorials/nix-language.html[Nix].
+Convert JSON to https://nix.dev/tutorials/nix-language.html[Nix].
+
+== Usage
+
+There is a CLI application as well as a web application.
 
 == Acknowledgements
 
-This projects makes use of the following open source projects and is thankful for their work:
+This web app makes use of the following open source projects and is thankful for their work:
 
-* https://bulma.io[Bulma] for CSS styles
+* https://leptos.dev/[Leptos] as the underlying web framework
+* https://bulma.io[Bulma] for CSS styling
 * https://highlightjs.org[highlight.js] for syntax highlighting

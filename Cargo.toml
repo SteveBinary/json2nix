@@ -10,6 +10,7 @@ members = [
 version = "0.1.0"
 edition = "2021"
 authors = ["SteveBinary"]
+repository = "https://github.com/SteveBinary/json2nix"
 
 [workspace.dependencies]
 json2nix = { path = "json2nix" }

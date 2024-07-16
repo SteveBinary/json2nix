@@ -1,13 +1,7 @@
 use leptos::*;
 
 #[component]
-pub fn NumberInput(
-    #[prop(into)] value: RwSignal<usize>,
-    min: usize,
-    max: usize,
-    id: &'static str,
-    label: String,
-) -> impl IntoView {
+pub fn NumberInput(#[prop(into)] value: RwSignal<usize>, min: usize, max: usize, id: &'static str, label: String) -> impl IntoView {
     let input_value = move |event| {
         let new_value = event_target_value(&event);
         if new_value.is_empty() {
