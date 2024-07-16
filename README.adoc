@@ -6,6 +6,13 @@ Convert JSON to https://nix.dev/tutorials/nix-language.html[Nix].
 
 There is a CLI application as well as a web application.
 
+To quickly try the CLI, you can use Nix to run the flake directly from GitHub:
+
+[,console]
+----
+nix run github:SteveBinary/json2nix#cli -- --help
+----
+
 == Acknowledgements
 
 This web app makes use of the following open source projects and is thankful for their work:
