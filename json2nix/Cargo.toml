@@ -5,6 +5,7 @@ description = "Library to convert JSON to a Nix expression"
 edition.workspace = true
 authors.workspace = true
 repository.workspace = true
+license.workspace = true
 
 [dependencies]
 serde_json = { workspace = true }

@@ -5,6 +5,7 @@ description = "Tool to convert JSON to a Nix expression"
 edition.workspace = true
 authors.workspace = true
 repository.workspace = true
+license.workspace = true
 
 [[bin]]
 name = "json2nix"
