@@ -2,7 +2,7 @@ use crate::copy_button::CopyButton;
 use crate::number_input::NumberInput;
 use json2nix::json2nix;
 use leptos::*;
-use leptos_use::{use_cookie, utils::FromToStringCodec};
+use leptos_use::{use_cookie_with_options, utils::FromToStringCodec, UseCookieOptions};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
@@ -11,10 +11,15 @@ extern "C" {
 }
 
 const PROJECT_REPOSITORY_URL: &'static str = env!("CARGO_PKG_REPOSITORY");
+const ONE_YEAR_IN_MILLISECONDS: i64 = 365 * 24 * 60 * 60 * 1000;
 
 #[component]
 pub fn App() -> impl IntoView {
-    let (cookie_raw_input, set_cookie_raw_input) = use_cookie::<String, FromToStringCodec>("raw_input");
+    let (cookie_raw_input, set_cookie_raw_input) = use_cookie_with_options::<String, FromToStringCodec>(
+        "raw_input",
+        // TODO: set the same_site attribute when the SameSite struct is re-exported in a new version of leptos-use
+        UseCookieOptions::default().max_age(ONE_YEAR_IN_MILLISECONDS),
+    );
     let raw_input = RwSignal::new("".to_string());
     let initial_indentation = RwSignal::new(0);
     let indentation = RwSignal::new(2);
