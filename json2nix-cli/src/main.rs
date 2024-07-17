@@ -40,7 +40,8 @@ fn main() -> Result<(), String> {
 
     let json = json_result.map_err(|err| format!("Could read the input from '{}' because of: {}", args.input, err))?;
 
-    let nix = json2nix(&json, args.initial_indentation, args.indentation).map_err(|err| format!("Could not convert the input to Nix: {}", err))?;
+    let nix =
+        json2nix(&json, args.initial_indentation, args.indentation, true).map_err(|err| format!("Could not convert the input to Nix: {}", err))?;
 
     match args.output {
         Some(file_name) => {

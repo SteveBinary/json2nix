@@ -1,11 +1,13 @@
 mod escape;
 mod indent;
 
+use std::ops::Not;
+
 use escape::escape_attribute_set_key;
 use indent::indent;
 use serde_json::Value;
 
-pub fn json2nix(input: &str, initial_indentation: usize, indentation_increment: usize) -> Result<String, String> {
+pub fn json2nix(input: &str, initial_indentation: usize, indentation_increment: usize, compress_sets: bool) -> Result<String, String> {
     let json: Value = match serde_json::from_str(input) {
         Ok(value) => value,
         Err(err) => {
@@ -13,10 +15,47 @@ pub fn json2nix(input: &str, initial_indentation: usize, indentation_increment: 
         }
     };
 
-    Ok(indent(&to_nix(&json, initial_indentation, indentation_increment), initial_indentation))
+    Ok(indent(
+        &to_nix(
+            &json,
+            &ToNixOptions {
+                current_indentation: initial_indentation,
+                indentation_increment,
+                compress_sets,
+                parent_is_a_set: false,
+            },
+        ),
+        initial_indentation,
+    ))
 }
 
-fn to_nix(value: &Value, indentation: usize, indentation_increment: usize) -> String {
+#[derive(Debug, Clone)]
+struct ToNixOptions {
+    current_indentation: usize,
+    indentation_increment: usize,
+    compress_sets: bool,
+    parent_is_a_set: bool,
+}
+
+impl ToNixOptions {
+    fn with_indentation_incremented(&self) -> Self {
+        let mut options = self.clone();
+        options.current_indentation += options.indentation_increment;
+        options
+    }
+
+    fn with_parent_is_a_set(mut self) -> Self {
+        self.parent_is_a_set = true;
+        self
+    }
+
+    fn with_parent_is_not_a_set(mut self) -> Self {
+        self.parent_is_a_set = false;
+        self
+    }
+}
+
+fn to_nix(value: &Value, options: &ToNixOptions) -> String {
     match value {
         Value::Null => "null".to_string(),
         Value::Bool(bool) => bool.to_string(),
@@ -25,41 +64,60 @@ fn to_nix(value: &Value, indentation: usize, indentation_increment: usize) -> St
         Value::Array(array) => match array.len() {
             0 => "[ ]".to_string(),
             _ => {
+                let next_options = options.with_indentation_incremented().with_parent_is_not_a_set();
                 let mut formatted_elements = Vec::with_capacity(array.len());
+
                 for element in array {
-                    formatted_elements.push(to_nix(element, indentation + indentation_increment, indentation_increment));
+                    formatted_elements.push(to_nix(element, &next_options));
                 }
+
                 format!(
                     "[\n{}\n{}",
                     formatted_elements
                         .iter()
-                        .map(|fe| indent(fe, indentation + indentation_increment))
+                        .map(|fe| indent(fe, next_options.current_indentation))
                         .collect::<Vec<_>>()
                         .join("\n"),
-                    indent("]", indentation)
+                    indent("]", options.current_indentation)
                 )
             }
         },
         Value::Object(object) => match object.len() {
             0 => "{ }".to_string(),
             _ => {
+                let next_options = options.with_indentation_incremented().with_parent_is_a_set();
                 let mut formatted_elements = Vec::with_capacity(object.len());
+
                 for (key, value) in object {
-                    formatted_elements.push(format!(
-                        "{} = {};",
-                        escape_attribute_set_key(key),
-                        to_nix(value, indentation + indentation_increment, indentation_increment)
-                    ));
+                    let should_compress_set = options.compress_sets && value.as_object().is_some_and(|obj| obj.len() == 1);
+                    formatted_elements.push({
+                        if should_compress_set && options.parent_is_a_set {
+                            format!("{}.{}", escape_attribute_set_key(key), to_nix(value, &next_options))
+                        } else if should_compress_set && options.parent_is_a_set.not() {
+                            format!("{{ {}.{} }}", escape_attribute_set_key(key), to_nix(value, &next_options))
+                        } else {
+                            format!("{} = {};", escape_attribute_set_key(key), to_nix(value, &next_options))
+                        }
+                    });
                 }
-                format!(
-                    "{{\n{}\n{}",
-                    formatted_elements
-                        .iter()
-                        .map(|fe| indent(fe, indentation + indentation_increment))
-                        .collect::<Vec<_>>()
-                        .join("\n"),
-                    indent("}", indentation)
-                )
+
+                if options.compress_sets && object.len() == 1 {
+                    if next_options.parent_is_a_set {
+                        format!("{}", formatted_elements.iter().cloned().collect::<Vec<_>>().join(""))
+                    } else {
+                        format!("{{{}", formatted_elements.iter().cloned().collect::<Vec<_>>().join(""))
+                    }
+                } else {
+                    format!(
+                        "{{\n{}\n{}",
+                        formatted_elements
+                            .iter()
+                            .map(|fe| indent(fe, next_options.current_indentation))
+                            .collect::<Vec<_>>()
+                            .join("\n"),
+                        indent("}", options.current_indentation)
+                    )
+                }
             }
         },
     }
@@ -89,90 +147,99 @@ mod test {
             .to_string()
     }
 
+    fn to_nix_options(compress_sets: bool, parent_is_a_set: bool) -> ToNixOptions {
+        ToNixOptions {
+            current_indentation: 0,
+            indentation_increment: 2,
+            compress_sets,
+            parent_is_a_set,
+        }
+    }
+
     #[test]
     fn null() {
-        assert_eq!("null", to_nix(&Value::Null, 0, 0));
+        assert_eq!("null", to_nix(&Value::Null, &to_nix_options(false, false)));
     }
 
     #[test]
     fn bool_false() {
-        assert_eq!("false", to_nix(&Value::Bool(false), 0, 0));
+        assert_eq!("false", to_nix(&Value::Bool(false), &to_nix_options(false, false)));
     }
 
     #[test]
     fn bool_true() {
-        assert_eq!("true", to_nix(&Value::Bool(true), 0, 0));
+        assert_eq!("true", to_nix(&Value::Bool(true), &to_nix_options(false, false)));
     }
 
     #[test]
     fn number_positive_integer() {
         let input = Value::Number(Number::from(123));
-        assert_eq!("123", to_nix(&input, 0, 0));
+        assert_eq!("123", to_nix(&input, &to_nix_options(false, false)));
     }
 
     #[test]
     fn number_negative_integer() {
         let input = Value::Number(Number::from(-123));
-        assert_eq!("-123", to_nix(&input, 0, 0));
+        assert_eq!("-123", to_nix(&input, &to_nix_options(false, false)));
     }
 
     #[test]
     fn number_positive_float() {
         let input = Value::Number(Number::from_f64(123.5505).unwrap());
-        assert_eq!("123.5505", to_nix(&input, 0, 0));
+        assert_eq!("123.5505", to_nix(&input, &to_nix_options(false, false)));
     }
 
     #[test]
     fn number_negative_float() {
         let input = Value::Number(Number::from_f64(-123.5505).unwrap());
-        assert_eq!("-123.5505", to_nix(&input, 0, 0));
+        assert_eq!("-123.5505", to_nix(&input, &to_nix_options(false, false)));
     }
 
     #[test]
     fn string_empty() {
-        assert_eq!(r#""""#, to_nix(&Value::String("".to_string()), 0, 0));
+        assert_eq!(r#""""#, to_nix(&Value::String("".to_string()), &to_nix_options(false, false)));
     }
 
     #[test]
     fn string_simple() {
         let input = Value::String("Hello, world!".to_string());
         let expected = r#""Hello, world!""#;
-        assert_eq!(expected, to_nix(&input, 0, 0));
+        assert_eq!(expected, to_nix(&input, &to_nix_options(false, false)));
     }
 
     #[test]
     fn array_empty() {
         let input = Value::Array(vec![]);
         let expected = "[ ]";
-        assert_eq!(expected, to_nix(&input, 0, 0));
+        assert_eq!(expected, to_nix(&input, &to_nix_options(false, false)));
     }
 
     #[test]
     fn array_single_bool() {
         let input = Value::Array(vec![Value::Bool(true)]);
         let expected = "[\n  true\n]";
-        assert_eq!(expected, to_nix(&input, 0, 2));
+        assert_eq!(expected, to_nix(&input, &to_nix_options(false, false)));
     }
 
     #[test]
     fn array_multiple_bool() {
         let input = json!([true, false]);
         let expected = "[\n  true\n  false\n]";
-        assert_eq!(expected, to_nix(&input, 0, 2));
+        assert_eq!(expected, to_nix(&input, &to_nix_options(false, false)));
     }
 
     #[test]
     fn object_empty() {
         let input = Value::Object(Map::new());
         let expected = "{ }";
-        assert_eq!(expected, to_nix(&input, 0, 0));
+        assert_eq!(expected, to_nix(&input, &to_nix_options(false, false)));
     }
 
     #[test]
     fn object_single_key() {
         let input = json!({ "key": "value" });
         let expected = "{\n  key = \"value\";\n}";
-        assert_eq!(expected, to_nix(&input, 0, 2));
+        assert_eq!(expected, to_nix(&input, &to_nix_options(false, false)));
     }
 
     #[test]
@@ -218,7 +285,7 @@ mod test {
               ];
             };
           }"#;
-        assert_eq!(trim_indent(expected), to_nix(&input, 0, 2));
+        assert_eq!(trim_indent(expected), to_nix(&input, &to_nix_options(false, false)));
     }
 
     #[test]
@@ -250,6 +317,20 @@ mod test {
               }
             ]
           ]"#;
-        assert_eq!(trim_indent(expected), to_nix(&input, 0, 2));
+        assert_eq!(trim_indent(expected), to_nix(&input, &to_nix_options(false, false)));
+    }
+
+    #[test]
+    fn compress_sets_simple() {
+        let input = json!({
+            "a": {
+                "b": 1
+            }
+        });
+        let expected = r#"
+          {
+            a.b = 1;
+          }"#;
+        assert_eq!(trim_indent(expected), to_nix(&input, &to_nix_options(true, false)));
     }
 }

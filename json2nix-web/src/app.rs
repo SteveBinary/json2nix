@@ -31,7 +31,7 @@ pub fn App() -> impl IntoView {
             return Ok("".to_string());
         }
 
-        json2nix(&json, initial_indentation.get(), indentation.get())
+        json2nix(&json, initial_indentation.get(), indentation.get(), false)
     });
 
     let nix_code_or_empty = Signal::derive(move || generated_nix_code_result.get().unwrap_or_default());
