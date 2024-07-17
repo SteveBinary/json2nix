@@ -4,7 +4,13 @@ Convert JSON to https://nix.dev/tutorials/nix-language.html[Nix].
 
 == Usage
 
-There is a CLI application as well as a web application.
+=== Web Application
+
+https://stevebinary.github.io/json2nix/
+
+NOTE: All processing is done locally in your browser, nothing is sent to a server!
+
+=== CLI
 
 To quickly try the CLI, you can use Nix to run the flake directly from GitHub:
 
@@ -20,3 +26,8 @@ This web app makes use of the following open source projects and is thankful for
 * https://leptos.dev/[Leptos] as the underlying web framework
 * https://bulma.io[Bulma] for CSS styling
 * https://highlightjs.org[highlight.js] for syntax highlighting
+
+---
+
+Inspired by https://github.com/uncenter/json-to-nix[uncenter/json-to-nix]
+and wanting to migrate the https://github.com/jandedobbeleer/oh-my-posh[Oh My Posh] config to be _Nix-only_.
