@@ -32,14 +32,14 @@ jobs:
       run: nix build .#web
 
     - name: Upload build artifacts of the web app
-      if: github.ref_name == "main"
+      if: github.ref_name == 'main'
       uses: actions/upload-pages-artifact@v3
       with:
         path: ./result
 
   deploy:
 
-    if: github.ref_name == "main"
+    if: github.ref_name == 'main'
     needs: build
     runs-on: ubuntu-latest
     steps:
