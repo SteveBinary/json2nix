@@ -16,6 +16,6 @@ pkgs.mkShell {
   ];
 
   env = {
-    TRUNK_SKIP_VERSION_CHECK = true;
+    TRUNK_SKIP_VERSION_CHECK = "true";
   };
 }

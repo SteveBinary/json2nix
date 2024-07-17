@@ -45,7 +45,11 @@ in
     buildPhase = ''
       runHook preBuild
       cd json2nix-web
-      trunk build --release --skip-version-check --offline
+      trunk build \
+        --release \
+        --skip-version-check \
+        --offline \
+        --public-url "/json2nix" # hardcoded until there is a way to parametrize flakes, see https://github.com/NixOS/nix/issues/5663
       runHook postBuild
     '';
 
