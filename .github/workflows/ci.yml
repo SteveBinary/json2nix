@@ -1,0 +1,49 @@
+name: "CI"
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install Nix
+      uses: DeterminateSystems/nix-installer-action@v12
+
+    - name: Set up Nix cache
+      uses: DeterminateSystems/magic-nix-cache-action@v7
+
+    - name: Build CLI app
+      run: nix build .#cli
+
+    - name: Build web app
+      run: nix build .#web
+
+    - name: Upload build artifacts of the web app
+      if: github.ref_name == "main"
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./result
+
+  deploy:
+
+    if: github.ref_name == "main"
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -51,8 +51,8 @@ in
 
     installPhase = ''
       runHook preInstall
-      mkdir -p $out/bin
-      mv dist $out/bin
+      mkdir -p $out
+      mv dist/* $out
       runHook postInstall
     '';
   };
