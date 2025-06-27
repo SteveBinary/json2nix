@@ -34,7 +34,7 @@ in
     nativeBuildInputs = with pkgs; [
       rustToolchain
       trunk
-      wasm-bindgen-cli # trunk would fail to install wasm-bindgen by itself
+      wasm-bindgen-cli_0_2_92 # trunk would fail to install wasm-bindgen by itself
     ];
 
     RUSTFLAGS = cargoConfig.build.rustflags;
