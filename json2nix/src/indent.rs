@@ -7,7 +7,7 @@ pub fn indent(value: &str, indentation: usize) -> String {
 
     result.push_str(value);
 
-    return result;
+    result
 }
 
 #[cfg(test)]

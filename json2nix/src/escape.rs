@@ -2,9 +2,9 @@ use std::ops::Not;
 
 pub fn escape_attribute_set_key(value: &str) -> String {
     if needs_escape(&value) {
-        return format!("\"{}\"", value.replace("\"", "\\\""));
+        format!("\"{}\"", value.replace("\"", "\\\""))
     } else {
-        return value.to_string();
+        value.to_string()
     }
 }
 

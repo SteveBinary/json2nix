@@ -1,6 +1,6 @@
 use crate::copy_button::CopyButton;
 use crate::number_input::NumberInput;
-use json2nix::json2nix;
+use json2nix::{json2nix, Json2NixConfig};
 use leptos::*;
 use leptos_use::{use_cookie_with_options, utils::FromToStringCodec, UseCookieOptions};
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -31,7 +31,8 @@ pub fn App() -> impl IntoView {
             return Ok("".to_string());
         }
 
-        json2nix(&json, initial_indentation.get(), indentation.get())
+        let config = Json2NixConfig::new(initial_indentation.get(), indentation.get());
+        json2nix(&json, &config)
     });
 
     let nix_code_or_empty = Signal::derive(move || generated_nix_code_result.get().unwrap_or_default());
@@ -124,12 +125,7 @@ pub fn App() -> impl IntoView {
                         </span>
                         <pre style="height: 100%;" class="is-size-6">
                             <code
-                                inner_html=move || {
-                                    match highlighted_nix_code.get() {
-                                        Ok(code) => code,
-                                        Err(err) => err,
-                                    }
-                                }
+                                inner_html=move || highlighted_nix_code.get().unwrap_or_else(|err| err)
                             />
                         </pre>
                     </div>
