@@ -1,9 +1,9 @@
 use std::{
     fs,
-    io::{stdin, Read},
+    io::{Read, stdin},
 };
 
-use json2nix::{json2nix, Json2NixConfig};
+use json2nix::{Json2NixConfig, json2nix};
 
 use clap::Parser;
 
@@ -19,12 +19,11 @@ struct Args {
     #[arg(short, long, default_value_t = 2, help = "The number of spaces for indentation.")]
     indentation: usize,
 
-    #[arg(
-        long = "initial-indentation",
-        default_value_t = 0,
-        help = "The number spaces to indent the whole output with."
-    )]
+    #[arg(long, default_value_t = 0, help = "The number spaces to indent the whole output with.")]
     initial_indentation: usize,
+
+    #[arg(short, long, default_value_t = false, help = "Compact the keys in sets if they contain only one value.")]
+    compact_set_keys: bool,
 }
 
 fn main() -> Result<(), String> {
@@ -40,7 +39,7 @@ fn main() -> Result<(), String> {
 
     let json = json_result.map_err(|err| format!("Could read the input from '{}' because of: {}", args.input, err))?;
 
-    let config = Json2NixConfig::new(args.initial_indentation, args.indentation);
+    let config = Json2NixConfig::new(args.initial_indentation, args.indentation, args.compact_set_keys);
     let nix = json2nix(&json, &config).map_err(|err| format!("Could not convert the input to Nix: {}", err))?;
 
     match args.output {

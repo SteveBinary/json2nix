@@ -1,4 +1,5 @@
 mod app;
+mod checkbox;
 mod copy_button;
 mod number_input;
 

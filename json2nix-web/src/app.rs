@@ -1,8 +1,9 @@
+use crate::checkbox::CheckBox;
 use crate::copy_button::CopyButton;
 use crate::number_input::NumberInput;
-use json2nix::{json2nix, Json2NixConfig};
+use json2nix::{Json2NixConfig, json2nix};
 use leptos::*;
-use leptos_use::{use_cookie_with_options, utils::FromToStringCodec, UseCookieOptions};
+use leptos_use::{UseCookieOptions, use_cookie_with_options, utils::FromToStringCodec};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
@@ -23,6 +24,7 @@ pub fn App() -> impl IntoView {
     let raw_input = RwSignal::new("".to_string());
     let initial_indentation = RwSignal::new(0);
     let indentation = RwSignal::new(2);
+    let compact_set_keys = RwSignal::new(false);
 
     let generated_nix_code_result = Signal::derive(move || {
         let json = raw_input.get();
@@ -31,7 +33,7 @@ pub fn App() -> impl IntoView {
             return Ok("".to_string());
         }
 
-        let config = Json2NixConfig::new(initial_indentation.get(), indentation.get());
+        let config = Json2NixConfig::new(initial_indentation.get(), indentation.get(), compact_set_keys.get());
         json2nix(&json, &config)
     });
 
@@ -72,13 +74,20 @@ pub fn App() -> impl IntoView {
                                     label="Left Margin".to_string()
                                 />
                             </div>
-                            <div class="ml-3">
+                            <div class="mx-3">
                                 <NumberInput
                                     id="indentation"
                                     value=indentation
                                     min=0
                                     max=50
                                     label="Indentation".to_string()
+                                />
+                            </div>
+                            <div class="ml-3">
+                                <CheckBox
+                                    id="compact_set_keys"
+                                    checked=compact_set_keys
+                                    label="Compact Set Keys".to_string()
                                 />
                             </div>
                         </div>
