@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 use leptos_use::{UseClipboardReturn, use_clipboard};
 use std::ops::Not;
 

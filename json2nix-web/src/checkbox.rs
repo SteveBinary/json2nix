@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 #[component]
 pub fn CheckBox(#[prop(into)] checked: RwSignal<bool>, id: &'static str, label: String) -> impl IntoView {

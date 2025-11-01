@@ -2,8 +2,9 @@ use crate::checkbox::CheckBox;
 use crate::copy_button::CopyButton;
 use crate::number_input::NumberInput;
 use json2nix::{Json2NixConfig, json2nix};
-use leptos::*;
-use leptos_use::{UseCookieOptions, use_cookie_with_options, utils::FromToStringCodec};
+use leptos::prelude::*;
+use leptos_use::{UseCookieOptions, use_cookie_with_options};
+use codee::string::FromToStringCodec;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]

@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 #[component]
 pub fn NumberInput(#[prop(into)] value: RwSignal<usize>, min: usize, max: usize, id: &'static str, label: String) -> impl IntoView {
