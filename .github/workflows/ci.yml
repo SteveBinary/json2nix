@@ -15,13 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v18
+        uses: DeterminateSystems/nix-installer-action@v20
 
       - name: Set up Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v12
+        uses: DeterminateSystems/magic-nix-cache-action@v13
         with:
           use-flakehub: false
           use-gha-cache: true
@@ -34,7 +34,7 @@ jobs:
 
       - name: Upload build artifacts of the web app
         if: github.ref_name == 'main'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./result
 
