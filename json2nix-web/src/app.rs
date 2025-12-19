@@ -133,7 +133,7 @@ pub fn App() -> impl IntoView {
                         <span style="position: absolute; right: 0; top: 0; margin: var(--bulma-pre-padding);">
                             <CopyButton value=nix_code_or_empty/>
                         </span>
-                        <pre style="height: 100%;" class="is-size-6">
+                        <pre style="height: 100%; min-height: 10em;" class="is-size-6">
                             <code
                                 inner_html=move || highlighted_nix_code.get().unwrap_or_else(|err| err)
                             />
