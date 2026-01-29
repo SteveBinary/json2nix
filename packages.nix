@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs }:
 
 let
   cliManifest = pkgs.lib.importTOML ./json2nix-cli/Cargo.toml;
@@ -43,21 +43,17 @@ in
     doCheck = false; # the web app contains no tests
 
     buildPhase = ''
-      runHook preBuild
       cd json2nix-web
       trunk build \
         --release \
         --skip-version-check \
         --offline \
         --public-url "/json2nix" # hardcoded until there is a way to parametrize flakes, see https://github.com/NixOS/nix/issues/5663
-      runHook postBuild
     '';
 
     installPhase = ''
-      runHook preInstall
       mkdir -p $out
       mv dist/* $out
-      runHook postInstall
     '';
   };
 }
