@@ -1,6 +1,7 @@
 { pkgs }:
 
 let
+  rootManifest = pkgs.lib.importTOML ./Cargo.toml;
   cliManifest = pkgs.lib.importTOML ./json2nix-cli/Cargo.toml;
   webManifest = pkgs.lib.importTOML ./json2nix-web/Cargo.toml;
   cargoConfig = pkgs.lib.importTOML ./.cargo/config.toml;
@@ -9,7 +10,7 @@ in
 {
   cli = pkgs.rustPlatform.buildRustPackage {
     pname = (builtins.head cliManifest.bin).name;
-    version = cliManifest.package.version;
+    version = rootManifest.workspace.package.version;
 
     src = pkgs.lib.cleanSource ./.;
     cargoLock.lockFile = ./Cargo.lock;
@@ -26,7 +27,7 @@ in
 
   web = pkgs.rustPlatform.buildRustPackage {
     pname = webManifest.package.name;
-    version = webManifest.package.version;
+    version = rootManifest.workspace.package.version;
 
     src = pkgs.lib.cleanSource ./.;
     cargoLock.lockFile = ./Cargo.lock;
@@ -34,7 +35,10 @@ in
     nativeBuildInputs = with pkgs; [
       rustToolchain
       trunk
-      wasm-bindgen-cli_0_2_108 # trunk would fail to install wasm-bindgen by itself
+
+      # build tool which trunk would fail to install by itself
+      binaryen
+      wasm-bindgen-cli_0_2_114
     ];
 
     RUSTFLAGS = cargoConfig.build.rustflags;
@@ -46,6 +50,8 @@ in
       cd json2nix-web
       trunk build \
         --release \
+        --cargo-profile=release-for-web \
+        --minify \
         --skip-version-check \
         --offline \
         --public-url "/json2nix" # hardcoded until there is a way to parametrize flakes, see https://github.com/NixOS/nix/issues/5663

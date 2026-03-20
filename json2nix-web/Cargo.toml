@@ -1,15 +1,17 @@
 [package]
 name = "json2nix-web"
-version = "1.0.0"
 description = "Web-App to convert JSON to a Nix expression"
+version.workspace = true
 edition.workspace = true
 authors.workspace = true
 repository.workspace = true
 license.workspace = true
 
 [dependencies]
-json2nix = { workspace = true }
+json2nix.workspace = true
 
-leptos = { workspace = true }
-leptos-use = { workspace = true }
-wasm-bindgen = { workspace = true }
+leptos.workspace = true
+leptos-use.workspace = true
+syntect.workspace = true
+two-face.workspace = true
+wasm-bindgen.workspace = true

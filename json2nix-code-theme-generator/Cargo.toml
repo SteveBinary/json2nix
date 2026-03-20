@@ -1,6 +1,6 @@
 [package]
-name = "json2nix-cli"
-description = "Tool to convert JSON to a Nix expression"
+name = "json2nix-code-theme-generator"
+description = "Tool to create the CSS code theme for json2nix-web"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -8,10 +8,10 @@ repository.workspace = true
 license.workspace = true
 
 [[bin]]
-name = "json2nix"
+name = "json2nix-code-theme-generator"
 path = "src/main.rs"
 
 [dependencies]
-json2nix.workspace = true
-
 clap.workspace = true
+syntect.workspace = true
+two-face.workspace = true

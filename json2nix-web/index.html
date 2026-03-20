@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Convert JSON to Nix">
     <title>Json2Nix</title>
+    <link data-trunk rel="rust"/>
     <link data-trunk rel="css" href="/assets/vendor/bulma/bulma.min.css"/>
-    <link data-trunk rel="css" media="screen and (prefers-color-scheme: light)" href="/assets/vendor/highlightjs/styles/stackoverflow-light.min.css"/>
-    <link data-trunk rel="css" media="screen and (prefers-color-scheme: dark)" href="/assets/vendor/highlightjs/styles/stackoverflow-dark.min.css"/>
-    <script data-trunk src="/assets/vendor/highlightjs/highlight.min.js" defer></script>
+    <link data-trunk rel="css" href="/assets/public/code-highlighting.css"/>
     <style>
       * {
         margin: 0;
@@ -25,11 +24,4 @@
       }
     </style>
   </head>
-  <body>
-    <script>
-      function highlight_nix_code(code) {
-        return hljs.highlight(code, { language: "nix", ignoreIllegals: true }).value
-      }
-    </script>
-  </body>
 </html>

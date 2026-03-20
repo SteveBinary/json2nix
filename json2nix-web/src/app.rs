@@ -1,16 +1,11 @@
 use crate::checkbox::CheckBox;
 use crate::copy_button::CopyButton;
+use crate::highlight::highlight_nix_code;
 use crate::number_input::NumberInput;
+use codee::string::FromToStringCodec;
 use json2nix::{Json2NixConfig, json2nix};
 use leptos::prelude::*;
-use leptos_use::{UseCookieOptions, use_cookie_with_options};
-use codee::string::FromToStringCodec;
-use wasm_bindgen::prelude::wasm_bindgen;
-
-#[wasm_bindgen]
-extern "C" {
-    pub fn highlight_nix_code(code: &str) -> String;
-}
+use leptos_use::{SameSite, UseCookieOptions, use_cookie_with_options};
 
 const PROJECT_REPOSITORY_URL: &'static str = env!("CARGO_PKG_REPOSITORY");
 const ONE_YEAR_IN_MILLISECONDS: i64 = 365 * 24 * 60 * 60 * 1000;
@@ -19,8 +14,7 @@ const ONE_YEAR_IN_MILLISECONDS: i64 = 365 * 24 * 60 * 60 * 1000;
 pub fn App() -> impl IntoView {
     let (cookie_raw_input, set_cookie_raw_input) = use_cookie_with_options::<String, FromToStringCodec>(
         "raw_input",
-        // TODO: set the same_site attribute when the SameSite struct is re-exported in a new version of leptos-use
-        UseCookieOptions::default().max_age(ONE_YEAR_IN_MILLISECONDS),
+        UseCookieOptions::default().max_age(ONE_YEAR_IN_MILLISECONDS).same_site(SameSite::Strict),
     );
     let raw_input = RwSignal::new("".to_string());
     let initial_indentation = RwSignal::new(0);
@@ -44,7 +38,7 @@ pub fn App() -> impl IntoView {
         let generated_nix_code = generated_nix_code_result.get();
 
         match generated_nix_code {
-            Ok(code) => Ok(highlight_nix_code(&code)),
+            Ok(code) => highlight_nix_code(&code),
             Err(err) => Err(err),
         }
     });

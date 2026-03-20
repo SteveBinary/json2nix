@@ -1,6 +1,7 @@
 mod app;
 mod checkbox;
 mod copy_button;
+mod highlight;
 mod number_input;
 
 use leptos::prelude::mount_to_body;
